@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gesture Communication System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet"/>
+  <style>
+/* ══════════════════════════════════
+   TOKENS
+══════════════════════════════════ */
+:root {
+  --black:  #0a0a0a;
+  --white:  #f8f5ee;
+  --pink:   #ff3cac;
+  --cyan:   #00f5d4;
+  --yellow: #ffe600;
+  --blue:   #4361ee;
+  --border: 3px solid var(--black);
+  --shadow: 6px 6px 0 var(--black);
+  --shadow-lg: 10px 10px 0 var(--black);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;scroll-behavior:smooth;}
+
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background: var(--white);
+  color: var(--black);
+  overflow-x:hidden;
+}
+
+/* ══════════════════════════════════
+   NOISE LAYER
+══════════════════════════════════ */
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:999;
+  pointer-events:none;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px;
+}
+
+/* ══════════════════════════════════
+   NAV
+══════════════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--black);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;
+  height:64px;
+  border-bottom:3px solid var(--yellow);
+}
+
+.nav-logo{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1.3rem;letter-spacing:.04em;
+  color:var(--white);
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo-dot{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--pink);
+  box-shadow:0 0 12px var(--pink);
+  animation:blink 1.8s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+.nav-tag{
+  font-size:.72rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--yellow);
+  border:2px solid var(--yellow);
+  padding:6px 14px;border-radius:4px;
+}
+
+.nav-right{
+  display:flex;align-items:center;gap:14px;
+}
+
+/* auth widget in nav, filled in by scripts/auth.js watchAuthUI() */
+[data-auth-status]{
+  display:flex;align-items:center;gap:10px;
+  font-size:.82rem;
+}
+[data-auth-status] .auth-greeting{
+  color:var(--white);font-weight:700;
+}
+[data-auth-status] .auth-nav-link{
+  color:var(--white);text-decoration:none;font-weight:700;
+}
+[data-auth-status] .auth-nav-link--accent{
+  background:var(--yellow);color:var(--black);
+  padding:6px 12px;border:2px solid var(--yellow);
+}
+[data-auth-status] .auth-logout-btn{
+  background:transparent;color:var(--white);
+  border:2px solid rgba(255,255,255,.4);
+  padding:5px 10px;font-weight:700;cursor:pointer;
+  font-family:inherit;font-size:.8rem;
+}
+[data-auth-status] .auth-logout-btn:hover{border-color:var(--cyan);}
+
+/* ══════════════════════════════════
+   TICKER
+══════════════════════════════════ */
+.ticker{
+  background:var(--pink);
+  overflow:hidden;
+  border-bottom:3px solid var(--black);
+  padding:10px 0;
+}
+.ticker-track{
+  display:flex;gap:0;
+  animation:tick 22s linear infinite;
+  width:max-content;
+}
+.ticker-item{
+  display:flex;align-items:center;gap:16px;
+  font-family:'Black Han Sans',sans-serif;
+  font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--black);
+  padding:0 32px;
+  border-right:2px solid rgba(0,0,0,0.2);
+}
+@keyframes tick{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ══════════════════════════════════
+   HERO
+══════════════════════════════════ */
+.hero{
+  display:grid;
+  grid-template-columns:1fr 480px;
+  min-height:calc(100vh - 64px - 43px);
+  border-bottom:3px solid var(--black);
+}
+
+/* LEFT */
+.hero-left{
+  padding:72px 64px;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:3px solid var(--black);
+  position:relative;
+  overflow:hidden;
+}
+
+/* decorative diagonal stripes bg */
+.hero-left::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(
+    -45deg,
+    transparent,transparent 28px,
+    rgba(255,60,172,0.04) 28px,rgba(255,60,172,0.04) 30px
+  );
+  pointer-events:none;
+}
+
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--yellow);
+  border:var(--border);
+  box-shadow:var(--shadow);
+  padding:7px 16px;
+  font-size:.72rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:36px;
+  width:fit-content;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.8);}to{opacity:1;transform:scale(1);}}
+
+.hero-h1{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(3.5rem,6vw,6.5rem);
+  line-height:.96;
+  letter-spacing:-.01em;
+  margin-bottom:32px;
+  animation:slideR .6s .1s ease both;
+}
+@keyframes slideR{from{opacity:0;transform:translateX(-30px);}to{opacity:1;transform:translateX(0);}}
+
+.hero-h1 .line-pink{
+  -webkit-text-stroke:3px var(--pink);
+  color:transparent;
+}
+.hero-h1 .line-fill{ color:var(--black); }
+
+.hero-body{
+  font-size:1.05rem;font-weight:300;line-height:1.75;
+  color:#3a3a3a;max-width:460px;
+  margin-bottom:48px;
+  animation:slideR .6s .2s ease both;
+}
+
+/* stat pills row */
+.stat-row{
+  display:flex;gap:16px;flex-wrap:wrap;
+  animation:slideR .6s .3s ease both;
+}
+.stat-pill{
+  display:flex;align-items:center;gap:10px;
+  border:var(--border);
+  box-shadow:var(--shadow);
+  padding:12px 20px;
+  background:var(--white);
+  transition:transform .2s,box-shadow .2s;
+}
+.stat-pill:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--black);}
+.pill-num{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;}
+.pill-lbl{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#666;}
+
+/* RIGHT */
+.hero-right{
+  background:var(--black);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:60px 40px;
+  gap:28px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* grid dots bg */
+.hero-right::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:28px 28px;
+  pointer-events:none;
+}
+
+/* big hand emoji in neon ring */
+.hand-ring{
+  position:relative;
+  width:220px;height:220px;
+  border-radius:50%;
+  border:3px solid var(--cyan);
+  box-shadow:0 0 40px rgba(0,245,212,.35),inset 0 0 40px rgba(0,245,212,.06);
+  display:flex;align-items:center;justify-content:center;
+  animation:spinRing 18s linear infinite;
+  flex-shrink:0;
+}
+@keyframes spinRing{to{transform:rotate(360deg);}}
+
+.hand-inner{
+  width:180px;height:180px;
+  border-radius:50%;
+  background:rgba(0,245,212,.07);
+  border:2px dashed rgba(0,245,212,.3);
+  display:flex;align-items:center;justify-content:center;
+  animation:spinRing 18s linear infinite reverse;
+}
+
+.hand-emoji{
+  font-size:5.5rem;
+  animation:floatHand 4s ease-in-out infinite;
+  filter:drop-shadow(0 0 18px rgba(0,245,212,.5));
+}
+@keyframes floatHand{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-8px) rotate(5deg);}}
+
+/* neon label cards */
+.neon-label{
+  width:100%;
+  border:2px solid;
+  padding:14px 20px;
+  display:flex;align-items:center;gap:12px;
+  font-size:.85rem;font-weight:700;letter-spacing:.06em;
+  position:relative;z-index:1;
+  animation:fadeUp .5s ease both;
+}
+.neon-label .nl-icon{font-size:1.3rem;}
+.neon-label--cyan{border-color:var(--cyan);color:var(--cyan);background:rgba(0,245,212,.06);box-shadow:inset 0 0 20px rgba(0,245,212,.04);}
+.neon-label--pink{border-color:var(--pink);color:var(--pink);background:rgba(255,60,172,.06);animation-delay:.1s;}
+.neon-label--yellow{border-color:var(--yellow);color:var(--yellow);background:rgba(255,230,0,.06);animation-delay:.2s;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══════════════════════════════════
+   MODES SECTION
+══════════════════════════════════ */
+.modes{
+  padding:100px 64px;
+  background:var(--white);
+  border-bottom:3px solid var(--black);
+}
+
+.section-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:56px;
+  gap:20px;
+  flex-wrap:wrap;
+}
+.section-h2{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(2.2rem,4vw,3.8rem);
+  line-height:1;
+}
+.section-h2 span{
+  -webkit-text-stroke:2px var(--black);
+  color:transparent;
+}
+.section-sub{
+  font-size:.95rem;font-weight:300;color:#555;
+  max-width:320px;text-align:right;line-height:1.6;
+}
+
+.mode-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:0;
+  border:var(--border);
+}
+
+.mode-card{
+  display:flex;flex-direction:column;
+  text-decoration:none;color:inherit;
+  border-right:var(--border);
+  transition:transform .25s ease,box-shadow .25s ease;
+  position:relative;
+  overflow:hidden;
+}
+.mode-card:last-child{border-right:none;}
+
+.mode-card:hover{
+  transform:translate(-5px,-5px);
+  z-index:2;
+  box-shadow:var(--shadow-lg);
+}
+
+/* coloured top bar */
+.card-bar{
+  height:8px;
+  flex-shrink:0;
+}
+.bar-pink   {background:var(--pink);}
+.bar-cyan   {background:var(--cyan);}
+.bar-yellow {background:var(--yellow);}
+
+.card-inner{padding:40px 36px 44px;}
+
+.card-number{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:5rem;line-height:1;
+  color:rgba(0,0,0,.06);
+  margin-bottom:16px;
+  letter-spacing:-.02em;
+}
+
+.card-icon-box{
+  width:64px;height:64px;
+  border:var(--border);
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+  margin-bottom:24px;
+  transition:transform .3s,box-shadow .3s;
+}
+.mode-card:hover .card-icon-box{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--black);}
+
+.icon-pink  {background:var(--pink);}
+.icon-cyan  {background:var(--cyan);}
+.icon-yellow{background:var(--yellow);}
+
+.card-eyebrow{
+  font-size:.68rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:10px;
+  color:#888;
+}
+
+.card-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1.7rem;letter-spacing:.01em;
+  margin-bottom:14px;
+  line-height:1.1;
+}
+
+.card-desc{
+  font-size:.9rem;font-weight:300;color:#555;line-height:1.7;
+  margin-bottom:28px;
+}
+
+.card-features{
+  list-style:none;
+  display:flex;flex-direction:column;gap:8px;
+  margin-bottom:36px;flex:1;
+}
+.card-features li{
+  display:flex;align-items:center;gap:10px;
+  font-size:.84rem;font-weight:600;
+}
+.feat-dash{width:14px;height:2px;flex-shrink:0;}
+.dash-pink  {background:var(--pink);}
+.dash-cyan  {background:var(--cyan);}
+.dash-yellow{background:var(--yellow);}
+
+.card-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  border:var(--border);
+  box-shadow:var(--shadow);
+  padding:12px 22px;
+  font-size:.8rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--black);color:var(--white);
+  transition:transform .2s,box-shadow .2s;
+  width:fit-content;
+}
+.mode-card:hover .card-cta{transform:translate(-3px,-3px);box-shadow:9px 9px 0 rgba(0,0,0,.35);}
+
+/* ══════════════════════════════════
+   HOW IT WORKS — zigzag
+══════════════════════════════════ */
+.how{
+  padding:100px 64px;
+  background:var(--black);
+  border-bottom:3px solid var(--yellow);
+}
+
+.how-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(2rem,4vw,3.6rem);
+  color:var(--white);
+  margin-bottom:64px;
+}
+.how-title span{color:var(--cyan);}
+
+.steps{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border:2px solid rgba(255,255,255,.1);
+}
+
+.step{
+  padding:44px 32px;
+  border-right:2px solid rgba(255,255,255,.1);
+  position:relative;
+  animation:fadeUp .6s ease both;
+}
+.step:last-child{border-right:none;}
+.step:nth-child(1){animation-delay:.05s;}
+.step:nth-child(2){animation-delay:.15s;background:rgba(255,60,172,.04);}
+.step:nth-child(3){animation-delay:.25s;}
+.step:nth-child(4){animation-delay:.35s;background:rgba(0,245,212,.04);}
+
+.step-n{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:4rem;
+  background:linear-gradient(135deg,var(--pink),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:20px;line-height:1;
+}
+.step-icon{font-size:2rem;margin-bottom:14px;}
+.step-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1.15rem;color:var(--white);
+  margin-bottom:10px;letter-spacing:.02em;
+}
+.step-txt{font-size:.86rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.65;}
+
+/* ══════════════════════════════════
+   TEAM
+══════════════════════════════════ */
+.team{
+  padding:100px 64px;
+  background:var(--yellow);
+  border-bottom:3px solid var(--black);
+}
+
+.team-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(2rem,4vw,3.6rem);
+  margin-bottom:60px;
+}
+.team-title span{-webkit-text-stroke:2px var(--black);color:transparent;}
+
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  border:var(--border);
+  box-shadow:var(--shadow-lg);
+}
+
+.member{
+  background:var(--white);
+  border-right:var(--border);
+  padding:32px 28px;
+  transition:background .2s;
+  animation:fadeUp .6s ease both;
+}
+.member:nth-child(1){animation-delay:.05s;}
+.member:nth-child(2){animation-delay:.15s;}
+.member:nth-child(3){animation-delay:.25s;}
+.member:nth-child(4){border-right:none;animation-delay:.35s;}
+.member:hover{background:#fff5f0;}
+
+.member-av{
+  width:52px;height:52px;
+  border:var(--border);
+  box-shadow:var(--shadow);
+  background:var(--black);
+  color:var(--yellow);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1.1rem;letter-spacing:.04em;
+  margin-bottom:18px;
+}
+
+.member-name{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1rem;letter-spacing:.03em;
+  margin-bottom:6px;
+}
+.member-bar{width:24px;height:3px;background:var(--pink);margin-bottom:16px;}
+
+.m-row{display:flex;align-items:flex-start;gap:8px;font-size:.8rem;margin-bottom:7px;}
+.m-row a{color:#555;text-decoration:none;word-break:break-all;transition:color .2s;}
+.m-row a:hover{color:var(--pink);}
+.m-row span{color:#777;}
+
+/* ══════════════════════════════════
+   FOOTER
+══════════════════════════════════ */
+footer{
+  background:var(--black);
+  padding:60px 64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:32px;
+  flex-wrap:wrap;
+  border-top:3px solid var(--pink);
+}
+
+.footer-logo{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:2rem;letter-spacing:.04em;
+  color:var(--white);
+  display:flex;align-items:center;gap:12px;
+}
+.footer-logo-dot{width:14px;height:14px;background:var(--pink);border-radius:50%;box-shadow:0 0 14px var(--pink);}
+
+.footer-right{display:flex;flex-direction:column;align-items:flex-end;gap:16px;}
+
+.footer-icons{display:flex;gap:10px;}
+.f-icon{
+  width:44px;height:44px;
+  border:2px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;cursor:pointer;
+  transition:border-color .2s,transform .2s,background .2s;
+}
+.f-icon:hover{border-color:var(--cyan);transform:translateY(-3px);background:rgba(0,245,212,.08);}
+
+.footer-copy{font-size:.72rem;color:rgba(255,255,255,.3);letter-spacing:.06em;}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media(max-width:1100px){
+  nav,footer{padding-left:28px;padding-right:28px;}
+  .hero{grid-template-columns:1fr;}
+  .hero-right{min-height:380px;border-top:3px solid var(--black);}
+  .hero-left{padding:60px 28px;}
+  .modes,.how,.team{padding:72px 28px;}
+  .team-grid{grid-template-columns:repeat(2,1fr);}
+  .member:nth-child(2){border-right:none;}
+  .member:nth-child(3){border-top:var(--border);}
+  .member:nth-child(4){border-top:var(--border);border-right:none;}
+  .steps{grid-template-columns:repeat(2,1fr);}
+  .step:nth-child(2){border-right:none;}
+  .step:nth-child(3){border-top:2px solid rgba(255,255,255,.1);}
+}
+
+@media(max-width:768px){
+  .mode-grid{grid-template-columns:1fr;}
+  .mode-card{border-right:none;border-bottom:var(--border);}
+  .mode-card:last-child{border-bottom:none;}
+  .section-header{flex-direction:column;align-items:flex-start;}
+  .section-sub{text-align:left;max-width:100%;}
+}
+
+@media(max-width:540px){
+  .team-grid{grid-template-columns:1fr;}
+  .member{border-right:none;border-bottom:var(--border);}
+  .member:last-child{border-bottom:none;}
+  .steps{grid-template-columns:1fr;}
+  .step{border-right:none;border-bottom:2px solid rgba(255,255,255,.1);}
+  .step:last-child{border-bottom:none;}
+  footer{flex-direction:column;align-items:flex-start;}
+  .footer-right{align-items:flex-start;}
+}
+
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--black);}
+::-webkit-scrollbar-thumb{background:var(--pink);}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    GCS
+  </div>
+  <div class="nav-right">
+    <div class="nav-tag">🤟 Inclusive Tech</div>
+    <div data-auth-status aria-live="polite"></div>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">✦ Gesture Recognition</span>
+    <span class="ticker-item">✦ Inclusive Design</span>
+    <span class="ticker-item">✦ Real-Time Speech</span>
+    <span class="ticker-item">✦ Sign Language</span>
+    <span class="ticker-item">✦ Audio Guidance</span>
+    <span class="ticker-item">✦ Visual Feedback</span>
+    <span class="ticker-item">✦ Accessible Tech</span>
+    <span class="ticker-item">✦ Break Barriers</span>
+    <span class="ticker-item">✦ Gesture Recognition</span>
+    <span class="ticker-item">✦ Inclusive Design</span>
+    <span class="ticker-item">✦ Real-Time Speech</span>
+    <span class="ticker-item">✦ Sign Language</span>
+    <span class="ticker-item">✦ Audio Guidance</span>
+    <span class="ticker-item">✦ Visual Feedback</span>
+    <span class="ticker-item">✦ Accessible Tech</span>
+    <span class="ticker-item">✦ Break Barriers</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+
+  <div class="hero-left">
+    <div class="hero-kicker">✦ Accessible Communication Platform</div>
+
+    <h1 class="hero-h1">
+      <div class="line-fill">SPEAK</div>
+      <div class="line-fill">WITH</div>
+      <div class="line-pink">GESTURE</div>
+    </h1>
+
+    <p class="hero-body">
+      Breaking every communication barrier — real-time gesture recognition built for blind, deaf, and sighted users alike. One platform, three powerful modes.
+    </p>
+
+    <div class="stat-row">
+      <div class="stat-pill">
+        <span class="pill-num">3</span>
+        <span class="pill-lbl">Modes</span>
+      </div>
+      <div class="stat-pill">
+        <span class="pill-num">100%</span>
+        <span class="pill-lbl">Accessible</span>
+      </div>
+      <div class="stat-pill">
+        <span class="pill-num">∞</span>
+        <span class="pill-lbl">Connections</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hand-ring">
+      <div class="hand-inner">
+        <div class="hand-emoji">🤟</div>
+      </div>
+    </div>
+
+    <div class="neon-label neon-label--cyan">
+      <span class="nl-icon">🎤</span> Speech Recognition Active
+    </div>
+    <div class="neon-label neon-label--pink">
+      <span class="nl-icon">👁️</span> Audio Guidance Mode
+    </div>
+    <div class="neon-label neon-label--yellow">
+      <span class="nl-icon">🔊</span> Text to Speech Ready
+    </div>
+  </div>
+
+</section>
+
+<!-- MODES -->
+<section class="modes">
+  <div class="section-header">
+    <h2 class="section-h2">CHOOSE <span>YOUR</span><br>MODE</h2>
+    <p class="section-sub">Three distinct experiences, each crafted with care for a specific communication need.</p>
+  </div>
+
+  <div class="mode-grid">
+
+    <!-- BLIND -->
+    <a href="blind2.html" class="mode-card">
+      <div class="card-bar bar-pink"></div>
+      <div class="card-inner">
+        <div class="card-number">01</div>
+        <div class="card-icon-box icon-pink">👁️</div>
+        <div class="card-eyebrow">Audio-First Experience</div>
+        <h3 class="card-title">BLIND USERS MODE</h3>
+        <p class="card-desc">Fully audio-guided — gestures described through sound and optimised for screen readers.</p>
+        <ul class="card-features">
+          <li><span class="feat-dash dash-pink"></span>Speech recognition input</li>
+          <li><span class="feat-dash dash-pink"></span>Screen-reader optimised</li>
+          <li><span class="feat-dash dash-pink"></span>Keyboard-first navigation</li>
+        </ul>
+        <div class="card-cta">Enter Mode →</div>
+      </div>
+    </a>
+
+    <!-- DEAF -->
+    <a href="deaf02.html" class="mode-card">
+      <div class="card-bar bar-cyan"></div>
+      <div class="card-inner">
+        <div class="card-number">02</div>
+        <div class="card-icon-box icon-cyan">👂</div>
+        <div class="card-eyebrow">Visual-First Experience</div>
+        <h3 class="card-title">DEAF USERS MODE</h3>
+        <p class="card-desc">Rich visual interface — speech and text translated into expressive gesture sequences live.</p>
+        <ul class="card-features">
+          <li><span class="feat-dash dash-cyan"></span>Real-time sign translation</li>
+          <li><span class="feat-dash dash-cyan"></span>Visual gesture overlays</li>
+          <li><span class="feat-dash dash-cyan"></span>Full subtitle support</li>
+        </ul>
+        <div class="card-cta">Enter Mode →</div>
+      </div>
+    </a>
+
+    <!-- NORMAL -->
+    <a href="normal2.html" class="mode-card">
+      <div class="card-bar bar-yellow"></div>
+      <div class="card-inner">
+        <div class="card-number">03</div>
+        <div class="card-icon-box icon-yellow">👥</div>
+        <div class="card-eyebrow">Full-Featured Experience</div>
+        <h3 class="card-title">NORMAL USERS MODE</h3>
+        <p class="card-desc">The complete interface — learn, practise, and communicate across all modalities at once.</p>
+        <ul class="card-features">
+          <li><span class="feat-dash dash-yellow"></span>Full gesture library</li>
+          <li><span class="feat-dash dash-yellow"></span>Multi-modal feedback</li>
+          <li><span class="feat-dash dash-yellow"></span>Advanced voice controls</li>
+        </ul>
+        <div class="card-cta">Enter Mode →</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <h2 class="how-title">HOW IT <span>WORKS</span></h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">01</div>
+      <div class="step-icon">🖐</div>
+      <div class="step-title">CAPTURE</div>
+      <p class="step-txt">Camera reads your hand and finger positions with high precision in real time.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">02</div>
+      <div class="step-icon">🧠</div>
+      <div class="step-title">RECOGNISE</div>
+      <p class="step-txt">The model identifies gestures and maps them to meaning instantly.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">03</div>
+      <div class="step-icon">🔄</div>
+      <div class="step-title">TRANSLATE</div>
+      <p class="step-txt">Output adapts — text, audio, or visual — depending on your chosen mode.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">04</div>
+      <div class="step-icon">💬</div>
+      <div class="step-title">COMMUNICATE</div>
+      <p class="step-txt">Seamless real-time communication, bridging every ability gap effortlessly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team">
+  <h2 class="team-title">MEET THE <span>CREATORS</span></h2>
+  <div class="team-grid">
+
+    <div class="member">
+      <div class="member-av">TS</div>
+      <div class="member-name">Thamarai Selvan R</div>
+      <div class="member-bar"></div>
+      <div class="m-row">✉️ <a href="mailto:thamaraiselvan2627@gmail.com">thamaraiselvan2627@gmail.com</a></div>
+      <div class="m-row">🐙 <a href="https://github.com/Thamaraiselvan-26" target="_blank">GitHub Profile</a></div>
+      <div class="m-row">📞 <span>+91 7397230408</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="footer-logo-dot"></div>
+    GESTURE COMM.
+  </div>
+  <div class="footer-right">
+    <div class="footer-icons">
+      <div class="f-icon">♿</div>
+      <div class="f-icon">🌍</div>
+      <div class="f-icon">💬</div>
+      <div class="f-icon">🤟</div>
+      <div class="f-icon">🤝</div>
+    </div>
+    <p class="footer-copy">© 2025 Gesture Communication System · Designed for Inclusive Communication</p>
+  </div>
+</footer>
+
+<script type="module">
+  import { watchAuthUI } from "./scripts/auth.js";
+  watchAuthUI();
+</script>
+
+</body>
+</html>

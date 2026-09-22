@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GCS — Visual Gesture Communication · Deaf Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles/deaf02.css"/>
+</head>
+<body>
+
+  <!-- ══ NAV ══════════════════════════════════ -->
+  <nav>
+    <a href="home.html" class="back-link">← BACK</a>
+    <div class="nav-logo">
+      <div class="nav-dot dot-cyan"></div>
+      GCS
+    </div>
+    <div class="nav-tag">👂 DEAF MODE</div>
+    <div data-auth-status aria-live="polite"></div>
+  </nav>
+
+  <!-- ══ TICKER ════════════════════════════════ -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span class="ticker-item">✦ Visual Communication</span>
+      <span class="ticker-item">✦ Sign Translation</span>
+      <span class="ticker-item">✦ Visual-First</span>
+      <span class="ticker-item">✦ Subtitle Support</span>
+      <span class="ticker-item">✦ Gesture Overlay</span>
+      <span class="ticker-item">✦ Real-Time Output</span>
+      <span class="ticker-item">✦ Camera Input</span>
+      <span class="ticker-item">✦ Break Barriers</span>
+      <span class="ticker-item">✦ Visual Communication</span>
+      <span class="ticker-item">✦ Sign Translation</span>
+      <span class="ticker-item">✦ Visual-First</span>
+      <span class="ticker-item">✦ Subtitle Support</span>
+      <span class="ticker-item">✦ Gesture Overlay</span>
+      <span class="ticker-item">✦ Real-Time Output</span>
+      <span class="ticker-item">✦ Camera Input</span>
+      <span class="ticker-item">✦ Break Barriers</span>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ══ HERO STRIP ═══════════════════════════ -->
+    <div class="hero-strip">
+      <div class="hero-left">
+        <div class="mode-badge">
+          <span class="badge-num">02</span>
+          <span class="badge-sep">|</span>
+          <span class="badge-label">Visual-First Experience</span>
+        </div>
+        <h1 class="page-title">VISUAL<br><span class="title-outline">GESTURE</span></h1>
+        <p class="page-desc">Real-time sign language and gesture communication — your hands speak visually to the world around you.</p>
+      </div>
+      <div class="hero-right">
+        <div class="icon-ring">
+          <div class="icon-inner">
+            <span class="ring-emoji">🤟</span>
+          </div>
+        </div>
+        <div class="neon-tag tag-cyan">SIGN ◆ VISUAL ◆ LIVE</div>
+      </div>
+    </div>
+
+    <!-- ══ MAIN GRID ═════════════════════════════ -->
+    <div class="content-grid">
+
+      <!-- LEFT — camera -->
+      <div class="col-left">
+
+        <!-- camera feed card -->
+        <div class="card">
+          <div class="card-bar bar-cyan"></div>
+          <div class="card-inner">
+            <div class="card-header-row">
+              <h2 class="card-h2">CAMERA FEED</h2>
+              <div id="cam-status" class="status-pill">
+                <span class="s-dot"></span> OFFLINE
+              </div>
+            </div>
+
+            <div class="cam-viewport" id="cam-viewport">
+              <video id="video-feed" autoplay muted playsinline aria-label="Camera feed"></video>
+              <canvas id="overlay-canvas" aria-hidden="true"></canvas>
+              <div class="cam-placeholder" id="cam-placeholder">
+                <span class="cam-placeholder-icon">📷</span>
+                <p class="cam-placeholder-text">CAMERA NOT ACTIVE</p>
+                <p class="cam-placeholder-sub">Press Start Camera to begin</p>
+              </div>
+              <div class="scan-line" id="scan-line" aria-hidden="true"></div>
+            </div>
+
+            <div class="btn-row">
+              <button id="start-cam-btn" class="btn btn-start" type="button">
+                <span class="btn-icon">▣</span> START CAMERA
+              </button>
+              <button id="stop-cam-btn" class="btn btn-stop" type="button" disabled>
+                <span class="btn-icon">■</span> STOP
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- detected gesture card -->
+        <div class="card">
+          <div class="card-bar bar-cyan"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">DETECTED GESTURE</h2>
+            <div class="gesture-display" id="gesture-display" role="status" aria-live="polite">
+              <span class="gesture-icon" id="gesture-icon">✋</span>
+              <div class="gesture-text-wrap">
+                <span class="gesture-label" id="gesture-label">NO GESTURE</span>
+                <span class="gesture-hint" id="gesture-hint">Waiting for input…</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT — output + reference + status -->
+      <div class="col-right">
+
+        <!-- translation output -->
+        <div class="card">
+          <div class="card-bar bar-cyan"></div>
+          <div class="card-inner">
+            <div class="card-header-row">
+              <h2 class="card-h2">TRANSLATION</h2>
+              <button id="clear-btn" class="btn-clear" type="button">✕ CLEAR</button>
+            </div>
+            <div
+              id="output"
+              class="output-box"
+              role="log"
+              aria-live="polite"
+              aria-atomic="false"
+              tabindex="0"
+              aria-label="Gesture translation output">
+              <p class="output-placeholder">Translated gestures will appear here…</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- quick reference -->
+        <div class="card">
+          <div class="card-bar bar-cyan"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">QUICK REFERENCE</h2>
+            <div class="sign-grid">
+              <div class="sign-chip"><span class="sign-emoji">👋</span><span class="sign-word">HELLO</span></div>
+              <div class="sign-chip"><span class="sign-emoji">🤟</span><span class="sign-word">LOVE</span></div>
+              <div class="sign-chip"><span class="sign-emoji">👍</span><span class="sign-word">YES</span></div>
+              <div class="sign-chip"><span class="sign-emoji">👎</span><span class="sign-word">NO</span></div>
+              <div class="sign-chip"><span class="sign-emoji">✌️</span><span class="sign-word">PEACE</span></div>
+              <div class="sign-chip"><span class="sign-emoji">🤙</span><span class="sign-word">CALL</span></div>
+              <div class="sign-chip"><span class="sign-emoji">👌</span><span class="sign-word">OK</span></div>
+              <div class="sign-chip"><span class="sign-emoji">🙏</span><span class="sign-word">THANKS</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- system status -->
+        <div class="card">
+          <div class="card-bar bar-cyan"></div>
+          <div class="card-inner">
+            <div id="status" class="status-box" role="status" aria-live="polite" aria-atomic="true">
+              <span class="s-dot"></span>
+              <span class="s-text" id="status-text">READY</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <div id="sr-announcements" class="visually-hidden" role="status" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- MediaPipe -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <script src="scripts/double.js"></script>
+
+  <script>
+  const startBtn    = document.getElementById('start-cam-btn');
+  const stopBtn     = document.getElementById('stop-cam-btn');
+  const clearBtn    = document.getElementById('clear-btn');
+  const camStatusEl = document.getElementById('cam-status');
+  const placeholder = document.getElementById('cam-placeholder');
+  const scanLine    = document.getElementById('scan-line');
+  const gestDisplay = document.getElementById('gesture-display');
+  const gestIcon    = document.getElementById('gesture-icon');
+  const gestLabel   = document.getElementById('gesture-label');
+  const gestHint    = document.getElementById('gesture-hint');
+  const outputBox   = document.getElementById('output');
+  const statusBox   = document.getElementById('status');
+  const statusText  = document.getElementById('status-text');
+  const srAnnounce  = document.getElementById('sr-announcements');
+
+  let lastLogged = '';
+  let logTimer   = null;
+
+  startBtn.addEventListener('click', () => {
+    startBtn.disabled = true;
+    stopBtn.disabled  = false;
+    camStatusEl.classList.add('live');
+    camStatusEl.innerHTML = '<span class="s-dot"></span> LIVE';
+    placeholder.classList.add('hidden');
+    scanLine.classList.add('active');
+    setStatus('active', 'FEED ACTIVE — DETECTION RUNNING');
+    srAnnounce.textContent = 'Camera started. Gesture detection active.';
+    if (typeof startCamera === 'function') startCamera();
+  });
+
+  stopBtn.addEventListener('click', () => {
+    stopBtn.disabled  = true;
+    startBtn.disabled = false;
+    camStatusEl.classList.remove('live');
+    camStatusEl.innerHTML = '<span class="s-dot"></span> OFFLINE';
+    placeholder.classList.remove('hidden');
+    scanLine.classList.remove('active');
+    setStatus('', 'READY');
+    srAnnounce.textContent = 'Camera stopped.';
+    if (typeof stopCamera === 'function') stopCamera();
+  });
+
+  clearBtn.addEventListener('click', () => {
+    outputBox.innerHTML = '<p class="output-placeholder">Translated gestures will appear here…</p>';
+    lastLogged = '';
+  });
+
+  function setStatus(state, msg) {
+    statusBox.className = 'status-box' + (state ? ' ' + state : '');
+    statusText.textContent = msg;
+  }
+
+  window.onGestureDetected = function(emoji, label) {
+    gestIcon.textContent  = emoji || '❓';
+    gestLabel.textContent = (label || 'UNKNOWN').toUpperCase();
+    gestHint.textContent  = emoji + ' ' + (label || '');
+    gestDisplay.classList.add('active');
+    setTimeout(() => gestDisplay.classList.remove('active'), 500);
+    const key = emoji + label;
+    clearTimeout(logTimer);
+    logTimer = setTimeout(() => {
+      if (key !== lastLogged) { lastLogged = key; appendLog(emoji, label); }
+    }, 350);
+  };
+
+  function appendLog(emoji, label) {
+    const ph = outputBox.querySelector('.output-placeholder');
+    if (ph) ph.remove();
+    const row = document.createElement('div');
+    row.className = 'output-row';
+    row.innerHTML = '<span class="out-emoji">' + emoji + '</span><span class="out-label">' + (label||'').toUpperCase() + '</span>';
+    outputBox.appendChild(row);
+    outputBox.scrollTop = outputBox.scrollHeight;
+    const rows = outputBox.querySelectorAll('.output-row');
+    if (rows.length > 60) rows[0].remove();
+  }
+
+  Object.defineProperty(window, 'showGesture', {
+    configurable: true,
+    get() {
+      return function(text) {
+        const m = text.match(/^(\S+)\s+(.+)$/);
+        window.onGestureDetected(m ? m[1] : text, m ? m[2] : text);
+      };
+    }
+  });
+  </script>
+  <script type="module">
+    import { watchAuthUI } from "./scripts/auth.js";
+    watchAuthUI();
+  </script>
+</body>
+</html>

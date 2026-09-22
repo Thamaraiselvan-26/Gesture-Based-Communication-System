@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Speech to Text – Blind Users Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles/blind2.css"/>
+</head>
+<body>
+
+  <!-- ══ NAV ══════════════════════════════════ -->
+  <nav>
+    <a href="home.html" class="back-link">← BACK</a>
+    <div class="nav-logo"><div class="nav-dot dot-pink"></div>GCS</div>
+    <div class="nav-tag">👁️ Blind Mode</div>
+    <div data-auth-status aria-live="polite"></div>
+  </nav>
+
+  <!-- ══ TICKER ════════════════════════════════ -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">✦ Speech to Text</span>
+      <span class="ticker-item">✦ Audio-First</span>
+      <span class="ticker-item">✦ Screen Reader</span>
+      <span class="ticker-item">✦ Keyboard Nav</span>
+      <span class="ticker-item">✦ Voice Input</span>
+      <span class="ticker-item">✦ Gesture Audio</span>
+      <span class="ticker-item">✦ Accessibility</span>
+      <span class="ticker-item">✦ Break Barriers</span>
+      <span class="ticker-item">✦ Speech to Text</span>
+      <span class="ticker-item">✦ Audio-First</span>
+      <span class="ticker-item">✦ Screen Reader</span>
+      <span class="ticker-item">✦ Keyboard Nav</span>
+      <span class="ticker-item">✦ Voice Input</span>
+      <span class="ticker-item">✦ Gesture Audio</span>
+      <span class="ticker-item">✦ Accessibility</span>
+      <span class="ticker-item">✦ Break Barriers</span>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ══ HERO STRIP ═══════════════════════════ -->
+    <div class="hero-strip">
+      <div class="hero-left">
+        <div class="mode-badge">
+          <span class="badge-num">01</span>
+          <span class="badge-sep">|</span>
+          <span class="badge-label">Audio-First Experience</span>
+        </div>
+        <h1 class="page-title">SPEECH<br><span class="title-outline">TO TEXT</span></h1>
+        <p class="page-desc">
+          Press <strong>Start Listening</strong> to begin. Every action is keyboard-accessible and fully announced by screen readers.
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <div class="icon-ring">
+          <div class="icon-inner">
+            <span class="ring-emoji">🎤</span>
+          </div>
+        </div>
+        <div class="neon-tag tag-pink">VOICE ◆ AUDIO ◆ LIVE</div>
+      </div>
+    </div>
+
+    <!-- ══ CONTENT GRID ══════════════════════════ -->
+    <div class="content-grid">
+
+      <!-- LEFT — controls + output -->
+      <div class="col-left">
+
+        <!-- CONTROLS -->
+        <div class="card" id="controls-card">
+          <div class="card-bar bar-pink"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">CONTROLS</h2>
+            <p class="ctrl-hint">Use keyboard: <kbd>Space</kbd> to start, <kbd>Esc</kbd> to stop</p>
+            <div class="btn-row">
+              <button
+                id="start-btn" class="btn btn-start" type="button"
+                aria-label="Start listening to your voice">
+                <span aria-hidden="true">🎤</span> START LISTENING
+              </button>
+              <button
+                id="stop-btn" class="btn btn-stop" type="button"
+                aria-label="Stop listening" disabled>
+                <span aria-hidden="true">⏹</span> STOP
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="card">
+          <div class="card-bar bar-pink"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">STATUS</h2>
+            <div
+              id="status" class="status-box"
+              role="status" aria-live="polite" aria-atomic="true">
+              <span class="s-dot"></span>
+              <span class="s-text">READY TO START</span>
+            </div>
+
+            <!-- audio level visualiser (decorative) -->
+            <div class="audio-bars" id="audio-bars" aria-hidden="true">
+              <div class="a-bar"></div><div class="a-bar"></div><div class="a-bar"></div>
+              <div class="a-bar"></div><div class="a-bar"></div><div class="a-bar"></div>
+              <div class="a-bar"></div><div class="a-bar"></div><div class="a-bar"></div>
+              <div class="a-bar"></div><div class="a-bar"></div><div class="a-bar"></div>
+              <div class="a-bar"></div><div class="a-bar"></div><div class="a-bar"></div>
+              <div class="a-bar"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT — output -->
+      <div class="col-right">
+
+        <!-- OUTPUT -->
+        <div class="card card-output">
+          <div class="card-bar bar-pink"></div>
+          <div class="card-inner">
+            <div class="card-header-row">
+              <h2 class="card-h2">RECOGNIZED TEXT</h2>
+              <button
+                id="clear-btn" class="btn-clear-sm" type="button"
+                aria-label="Clear all recognized text">
+                ✕ CLEAR
+              </button>
+            </div>
+
+            <div
+              id="output" class="output-box"
+              role="log"
+              aria-live="polite"
+              aria-atomic="false"
+              tabindex="0"
+              aria-label="Your spoken words will appear here">
+              <p class="output-placeholder">Your spoken words will appear here…</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TIPS CARD -->
+        <div class="card">
+          <div class="card-bar bar-pink"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">QUICK TIPS</h2>
+            <ul class="tips-list">
+              <li class="tip-item">
+                <span class="tip-num">01</span>
+                <span>Speak clearly at a normal pace for best results.</span>
+              </li>
+              <li class="tip-item">
+                <span class="tip-num">02</span>
+                <span>Use a quiet environment to reduce background noise.</span>
+              </li>
+              <li class="tip-item">
+                <span class="tip-num">03</span>
+                <span>Allow microphone access when prompted by the browser.</span>
+              </li>
+              <li class="tip-item">
+                <span class="tip-num">04</span>
+                <span>Press <kbd>Tab</kbd> to navigate between all controls.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- end content-grid -->
+
+  </main>
+
+  <!-- sr announcements -->
+  <div id="sr-announcements" class="visually-hidden" role="status" aria-live="assertive" aria-atomic="true"></div>
+  <script src="scripts/blind.js"></script>
+  <script type="module">
+    import { watchAuthUI } from "./scripts/auth.js";
+    watchAuthUI();
+  </script>
+
+</body>
+</html>

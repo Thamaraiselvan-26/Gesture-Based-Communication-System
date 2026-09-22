@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Text to Speech – Normal Users Mode</title>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,800;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles/normal2.css"/>
+</head>
+<body>
+
+  <!-- ══ NAV ══════════════════════════════════ -->
+  <nav>
+    <a href="home.html" class="back-link">← BACK</a>
+    <div class="nav-logo"><div class="nav-dot dot-yellow"></div>GCS</div>
+    <div class="nav-tag">👥 Normal Mode</div>
+    <div data-auth-status aria-live="polite"></div>
+  </nav>
+
+  <!-- ══ TICKER ════════════════════════════════ -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">✦ Text to Speech</span>
+      <span class="ticker-item">✦ Voice Controls</span>
+      <span class="ticker-item">✦ Full-Featured</span>
+      <span class="ticker-item">✦ Pitch Control</span>
+      <span class="ticker-item">✦ Speed Control</span>
+      <span class="ticker-item">✦ Volume Control</span>
+      <span class="ticker-item">✦ Multi-Modal</span>
+      <span class="ticker-item">✦ Gesture Library</span>
+      <span class="ticker-item">✦ Text to Speech</span>
+      <span class="ticker-item">✦ Voice Controls</span>
+      <span class="ticker-item">✦ Full-Featured</span>
+      <span class="ticker-item">✦ Pitch Control</span>
+      <span class="ticker-item">✦ Speed Control</span>
+      <span class="ticker-item">✦ Volume Control</span>
+      <span class="ticker-item">✦ Multi-Modal</span>
+      <span class="ticker-item">✦ Gesture Library</span>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ══ HERO STRIP ═══════════════════════════ -->
+    <div class="hero-strip">
+      <div class="hero-left">
+        <div class="mode-badge">
+          <span class="badge-num">03</span>
+          <span class="badge-sep">|</span>
+          <span class="badge-label">Full-Featured Experience</span>
+        </div>
+        <h1 class="page-title">TEXT TO<br><span class="title-outline">SPEECH</span></h1>
+        <p class="page-desc">Enter your text, customise the voice settings, and press Speak to hear it read aloud with full control.</p>
+      </div>
+      <div class="hero-right">
+        <div class="icon-ring">
+          <div class="icon-inner">
+            <span class="ring-emoji">🔊</span>
+          </div>
+        </div>
+        <div class="neon-tag tag-yellow">PITCH ◆ SPEED ◆ VOLUME</div>
+      </div>
+    </div>
+
+    <!-- ══ CONTENT GRID ══════════════════════════ -->
+    <div class="content-grid">
+
+      <!-- LEFT -->
+      <div class="col-left">
+
+        <!-- text input -->
+        <div class="card">
+          <div class="card-bar bar-yellow"></div>
+          <div class="card-inner">
+            <div class="card-header-row">
+              <h2 class="card-h2">ENTER YOUR TEXT</h2>
+              <span class="char-badge" aria-live="polite"><span id="char-count">0</span> CHARS</span>
+            </div>
+            <textarea
+              id="text-input" class="b-textarea"
+              placeholder="Type or paste your text here…"
+              aria-label="Text to be spoken" rows="9"></textarea>
+          </div>
+        </div>
+
+        <!-- actions -->
+        <div class="card">
+          <div class="card-bar bar-yellow"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">ACTIONS</h2>
+            <div class="btn-row">
+              <button id="speak-btn" class="btn btn-speak" type="button" aria-label="Speak the entered text">
+                <span>🔊</span> SPEAK
+              </button>
+              <button id="stop-btn" class="btn btn-stop" type="button" aria-label="Stop speaking" disabled>
+                <span>⏹</span> STOP
+              </button>
+              <button id="clear-btn" class="btn btn-clear" type="button" aria-label="Clear all text">
+                <span>🗑</span> CLEAR
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- status -->
+        <div class="card">
+          <div class="card-bar bar-yellow"></div>
+          <div class="card-inner">
+            <div id="status" class="status-box" role="status" aria-live="polite" aria-atomic="true">
+              <span class="s-dot"></span>
+              <span class="s-text">READY</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT — voice settings -->
+      <div class="col-right">
+        <div class="card card-sticky">
+          <div class="card-bar bar-yellow"></div>
+          <div class="card-inner">
+            <h2 class="card-h2">VOICE SETTINGS</h2>
+
+            <div class="ctrl-group">
+              <label class="ctrl-lbl" for="voice-select">VOICE</label>
+              <div class="sel-wrap">
+                <select id="voice-select" class="b-select" aria-label="Select voice">
+                  <option value="">Loading voices…</option>
+                </select>
+                <span class="sel-arr">▾</span>
+              </div>
+            </div>
+
+            <div class="ctrl-group">
+              <div class="ctrl-row"><label class="ctrl-lbl" for="pitch-slider">PITCH</label><span id="pitch-value" class="val-tag">1.0</span></div>
+              <input type="range" id="pitch-slider" class="b-slider" min="0.5" max="2" step="0.1" value="1"
+                aria-label="Adjust voice pitch" aria-valuemin="0.5" aria-valuemax="2" aria-valuenow="1"/>
+              <div class="range-ends"><span>LOW</span><span>HIGH</span></div>
+            </div>
+
+            <div class="ctrl-group">
+              <div class="ctrl-row"><label class="ctrl-lbl" for="rate-slider">SPEED</label><span id="rate-value" class="val-tag">1.0</span></div>
+              <input type="range" id="rate-slider" class="b-slider" min="0.5" max="2" step="0.1" value="1"
+                aria-label="Adjust speaking speed" aria-valuemin="0.5" aria-valuemax="2" aria-valuenow="1"/>
+              <div class="range-ends"><span>SLOW</span><span>FAST</span></div>
+            </div>
+
+            <div class="ctrl-group">
+              <div class="ctrl-row"><label class="ctrl-lbl" for="volume-slider">VOLUME</label><span id="volume-value" class="val-tag">1.0</span></div>
+              <input type="range" id="volume-slider" class="b-slider" min="0" max="1" step="0.1" value="1"
+                aria-label="Adjust volume" aria-valuemin="0" aria-valuemax="1" aria-valuenow="1"/>
+              <div class="range-ends"><span>MUTE</span><span>MAX</span></div>
+            </div>
+
+            <!-- decorative waveform bars -->
+            <div class="waveform" aria-hidden="true">
+              <div class="w-bar"></div><div class="w-bar"></div><div class="w-bar"></div>
+              <div class="w-bar"></div><div class="w-bar"></div><div class="w-bar"></div>
+              <div class="w-bar"></div><div class="w-bar"></div><div class="w-bar"></div>
+              <div class="w-bar"></div><div class="w-bar"></div><div class="w-bar"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="sr-announcements" class="visually-hidden" role="status" aria-live="assertive" aria-atomic="true"></div>
+  <script src="scripts/normal.js"></script>
+  <script type="module">
+    import { watchAuthUI } from "./scripts/auth.js";
+    watchAuthUI();
+  </script>
+</body>
+</html>
